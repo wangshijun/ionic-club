@@ -41,7 +41,7 @@ angular.module('starter.controllers', [])
     };
 })
 
-.controller('PlaylistsCtrl', function($scope) {
+.controller('PlaylistsCtrl', function($scope, $firebaseObject) {
     $scope.playlists = [
         { title: 'Reggae', id: 1 },
         { title: 'Chill', id: 2 },
@@ -50,6 +50,9 @@ angular.module('starter.controllers', [])
         { title: 'Rap', id: 5 },
         { title: 'Cowbell', id: 6 }
     ];
+
+    var ref = firebase.database().ref('object');
+    $scope.object = $firebaseObject(ref);
 })
 
 .controller('PlaylistCtrl', function($scope, $stateParams) {
