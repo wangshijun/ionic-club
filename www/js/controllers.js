@@ -156,13 +156,13 @@ angular.module('starter.controllers', [])
 
 })
 
-.controller('PostListCtrl', function($scope, $firebaseArray, $interval, $localStorage) {
-    var ref = firebase.database().ref('/posts').orderByChild('createAt').limitToLast(10);
+.controller('PostListCtrl', function($scope, $firebaseArray, $interval, $localStorage, $timeout, $ionicModal, ionicToast) {
+    var ref = firebase.database().ref('/posts').orderByChild('createdAt').limitToLast(20);
     var list = $firebaseArray(ref);
-    var user = $localStorage.loginUser;
-
     $scope.posts = list;
+    $scope.user = $localStorage.loginUser;
 
+    // Loading indicator
     $scope.error = null;
     $scope.isLoading = true;
     list.$loaded().then(function () {
@@ -171,22 +171,73 @@ angular.module('starter.controllers', [])
         $scope.isLoading = false;
         $scope.error = error.message;
     });
-    
-    // var postCount = 1;
-    // $interval(function () {
-    //     list.$add({
-    //         title: 'New Post #' + postCount,
-    //         content: 'Content for New Post #' + postCount,
-    //         author: user.uid,
-    //         category: 'default',
-    //         createAt: Date.now(),
-    //         updatedAt: Date.now(),
-    //     }).then(function () {
-    //         console.log('post added', postCount, arguments);
-    //     });
-    //
-    //     postCount++;
-    // }, 1000);
+
+    $scope.postData = {};
+
+    $ionicModal.fromTemplateUrl('templates/posts/form.html', {
+        scope: $scope
+    }).then(function(postFormModal) {
+        $scope.postFormModal = postFormModal;
+    });
+
+    $scope.closePostForm = function() {
+        $scope.postFormModal.hide();
+    };
+
+    $scope.openPostForm = function() {
+        $scope.postFormModal.show();
+    };
+
+    $scope.categories = [
+        '求职招聘',
+        '技术交流',
+        '谈天说地',
+    ];
+
+    $scope.addPost = function () {
+        $scope.error = null;
+
+        var content = $scope.postData.content;
+        var title = $scope.postData.title;
+        var category = $scope.postData.category;
+
+        if (!title) {
+            $scope.error = '请输入帖子标题';
+            return;
+        }
+
+        if (!content) {
+            $scope.error = '请输入帖子内容';
+            return;
+        }
+
+        if (!category) {
+            $scope.error = '请选择帖子分类';
+            return;
+        }
+
+        list.$add({
+            title: title,
+            content: content,
+            author: $scope.user.uid,
+            authorName: $scope.user.displayName || $scope.user.email.split('@').shift(),
+            category: category,
+            likeCount: 0,
+            commentCount: 0,
+            createdAt: firebase.database.ServerValue.TIMESTAMP,
+            updatedAt: firebase.database.ServerValue.TIMESTAMP,
+        }).then(function () {
+            console.log('post added', arguments);
+            $scope.error = null;
+            $scope.postData = {};
+            ionicToast.show('帖子发布成功', 'bottom', false, 1000);
+            $timeout(function () {
+                $scope.closePostForm();
+            }, 1000);
+        }).catch(function (error) {
+            $scope.error = error.message;
+        });
+    }
 })
 
 .controller('PostDetailCtrl', function($scope, $stateParams) {
