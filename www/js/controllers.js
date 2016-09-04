@@ -1,6 +1,6 @@
 angular.module('starter.controllers', [])
 
-.controller('AppCtrl', function($scope, $ionicModal, $timeout, $firebaseAuth) {
+.controller('AppCtrl', function($scope, $ionicModal, $timeout, $firebaseAuth, $localStorage, ionicToast) {
 
     // With the new view caching in Ionic, Controllers are only called
     // when they are recreated or on app start, instead of every page change.
@@ -10,6 +10,9 @@ angular.module('starter.controllers', [])
     //});
 
     var auth = $firebaseAuth();
+
+    $scope.user = $localStorage.loginUser;
+    $scope.error = null;
 
     // Form data for the login modal
     $scope.loginData = {};
@@ -29,6 +32,14 @@ angular.module('starter.controllers', [])
     // Open the login modal
     $scope.login = function() {
         $scope.loginModal.show();
+    };
+
+    $scope.logout = function() {
+        auth.$signOut().then(function () {
+            $localStorage.loginUser = $scope.user = null;
+            $localStorage.loginDate = 0;
+            ionicToast.show('已注销!', 'bottom', false, 1000);
+        });
     };
 
     // Perform the login action when the user submits the login form
@@ -54,11 +65,16 @@ angular.module('starter.controllers', [])
         auth.$signInWithEmailAndPassword(email, password).then(function (firebaseUser) {
             if (firebaseUser) {
                 console.log(firebaseUser)
-                $scope.user = firebaseUser;
-                $scope.error = '登录成功!';
+                $scope.user = $localStorage.loginUser = {
+                    displayName: firebaseUser.displayName,
+                    email: firebaseUser.email,
+                    uid: firebaseUser.uid,
+                };
+                $localStorage.loginDate = Date.now();
+                ionicToast.show('登录成功!', 'bottom', false, 1000);
                 $timeout(function() {
                     $scope.closeLogin();
-                }, 2000);
+                }, 1000);
             }
         }).catch(function (error) {
             console.log(error);
