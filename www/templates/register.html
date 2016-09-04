@@ -1,28 +1,32 @@
 <ion-modal-view>
     <ion-header-bar>
-        <h1 class="title">登录</h1>
+        <h1 class="title">创建账号</h1>
         <div class="buttons">
             <button class="button button-clear" ng-click="closeLogin()">关闭</button>
         </div>
     </ion-header-bar>
     <ion-content>
-        <form ng-submit="doLogin()">
+        <form ng-submit="doRegister()">
             <div class="list">
                 <label class="item item-input">
                     <span class="input-label">邮箱</span>
-                    <input type="email" ng-model="loginData.email">
+                    <input type="email" ng-model="registerData.email">
                 </label>
                 <label class="item item-input">
                     <span class="input-label">密码</span>
-                    <input type="password" ng-model="loginData.password">
+                    <input type="password" ng-model="registerData.password">
                 </label>
-                <p class="padding assertive" ng-if="error">{{error}}</p>
+                <label class="item item-input">
+                    <span class="input-label">确认密码</span>
+                    <input type="password" ng-model="registerData.confirmPassword">
+                </label>
+                <p ng-if="error" class="assertive padding">{{error}}</p>
                 <div class="row">
                     <div class="col col-50">
-                        <button class="button button-block button-positive" type="submit">登录</button>
+                        <button class="button button-block button-positive" type="submit">创建账号</button>
                     </div>
                     <div class="col col-50">
-                        <a ng-click="openRegister()" class="button button-block button-light">创建账号</a>
+                        <a ng-click="openLogin()" class="button button-block button-light">登录</a>
                     </div>
                 </div>
             </div>

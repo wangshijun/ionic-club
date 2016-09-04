@@ -10,6 +10,26 @@ angular.module('starter.controllers', [])
     //});
 
     var auth = $firebaseAuth();
+    var login = function (email, password) {
+        auth.$signInWithEmailAndPassword(email, password).then(function (firebaseUser) {
+            if (firebaseUser) {
+                console.log(firebaseUser)
+                $scope.user = $localStorage.loginUser = {
+                    displayName: firebaseUser.displayName,
+                    email: firebaseUser.email,
+                    uid: firebaseUser.uid,
+                };
+                $localStorage.loginDate = Date.now();
+                ionicToast.show('登录成功!', 'bottom', false, 1000);
+                $timeout(function() {
+                    $scope.closeLogin();
+                }, 1000);
+            }
+        }).catch(function (error) {
+            console.log('login error:', error)
+            $scope.error = error.message;
+        });
+    }
 
     $scope.user = $localStorage.loginUser;
     $scope.error = null;
@@ -30,8 +50,9 @@ angular.module('starter.controllers', [])
     };
 
     // Open the login modal
-    $scope.login = function() {
+    $scope.openLogin = function() {
         $scope.loginModal.show();
+        $scope.registerModal.hide();
     };
 
     $scope.logout = function() {
@@ -62,26 +83,67 @@ angular.module('starter.controllers', [])
             return;
         }
 
-        auth.$signInWithEmailAndPassword(email, password).then(function (firebaseUser) {
-            if (firebaseUser) {
-                console.log(firebaseUser)
-                $scope.user = $localStorage.loginUser = {
-                    displayName: firebaseUser.displayName,
-                    email: firebaseUser.email,
-                    uid: firebaseUser.uid,
-                };
-                $localStorage.loginDate = Date.now();
-                ionicToast.show('登录成功!', 'bottom', false, 1000);
-                $timeout(function() {
-                    $scope.closeLogin();
-                }, 1000);
-            }
-        }).catch(function (error) {
-            console.log(error);
-            $scope.error = error;
-        });
-
+        login(email, password);
     };
+
+    // Form data for the register modal
+    $scope.registerData = {};
+
+    // Create the register modal that we will use later
+    $ionicModal.fromTemplateUrl('templates/register.html', {
+        scope: $scope
+    }).then(function(registerModal) {
+        $scope.registerModal = registerModal;
+    });
+
+    // Triggered in the register modal to close it
+    $scope.closeRegister = function() {
+        $scope.registerModal.hide();
+    };
+
+    // Open the register modal
+    $scope.openRegister = function() {
+        $scope.loginModal.hide();
+        $scope.registerModal.show();
+    };
+
+    // Perform the register action when the user submits the register form
+    $scope.doRegister = function() {
+        console.log('Doing register', $scope.registerData);
+
+        const { email, password, confirmPassword } = $scope.registerData;
+
+        $scope.firebaseUser = null;
+        $scope.error = null;
+
+        if (!email) {
+            $scope.error = { message: '请填写正确的邮箱' };
+            return;
+        }
+
+        if (!password) {
+            $scope.error = { message: '请填写登录密码' };
+            return;
+        }
+
+        if (!confirmPassword || confirmPassword !== password) {
+            $scope.error = { message: '请填写正确的确认密码' };
+            return;
+        }
+
+        auth.$createUserWithEmailAndPassword(email, password).then((firebaseUser) => {
+            console.log('register success:', firebaseUser);
+            ionicToast.show('注册成功，即将自动登录', 'middle', false, 1000);
+            $timeout(function () {
+                $scope.registerModal.hide();
+                login(email, password);
+            }, 1000);
+        }).catch((error) => {
+            console.log('register error:', error)
+            $scope.error = error.message;
+        });
+    };
+
 })
 
 .controller('PlaylistsCtrl', function($scope, $firebaseObject) {
