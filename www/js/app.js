@@ -45,24 +45,25 @@ angular.module('starter', ['ionic', 'firebase', 'ngStorage', 'ionic-toast', 'sta
             }
         }
     })
-    .state('app.playlists', {
-        url: '/playlists',
+    .state('app.posts', {
+        url: '/posts',
         views: {
             'menuContent': {
-                templateUrl: 'templates/playlists.html',
-                controller: 'PlaylistsCtrl'
+                templateUrl: 'templates/posts/list.html',
+                controller: 'PostListCtrl'
             }
         }
     })
     .state('app.single', {
-        url: '/playlists/:playlistId',
+        url: '/posts/:postId',
         views: {
             'menuContent': {
-                templateUrl: 'templates/playlist.html',
-                controller: 'PlaylistCtrl'
+                templateUrl: 'templates/posts/detail.html',
+                controller: 'PostDetailCtrl'
             }
         }
     });
+
     // if none of the above states are matched, use this as the fallback
-    $urlRouterProvider.otherwise('/app/playlists');
+    $urlRouterProvider.otherwise('/app/posts');
 });

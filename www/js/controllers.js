@@ -156,19 +156,38 @@ angular.module('starter.controllers', [])
 
 })
 
-.controller('PlaylistsCtrl', function($scope, $firebaseObject) {
-    $scope.playlists = [
-        { title: 'Reggae', id: 1 },
-        { title: 'Chill', id: 2 },
-        { title: 'Dubstep', id: 3 },
-        { title: 'Indie', id: 4 },
-        { title: 'Rap', id: 5 },
-        { title: 'Cowbell', id: 6 }
-    ];
+.controller('PostListCtrl', function($scope, $firebaseArray, $interval, $localStorage) {
+    var ref = firebase.database().ref('/posts').orderByChild('createAt').limitToLast(10);
+    var list = $firebaseArray(ref);
+    var user = $localStorage.loginUser;
 
-    var ref = firebase.database().ref('object');
-    $scope.object = $firebaseObject(ref);
+    $scope.posts = list;
+
+    $scope.error = null;
+    $scope.isLoading = true;
+    list.$loaded().then(function () {
+        $scope.isLoading = false;
+    }).catch(function (error) {
+        $scope.isLoading = false;
+        $scope.error = error.message;
+    });
+    
+    // var postCount = 1;
+    // $interval(function () {
+    //     list.$add({
+    //         title: 'New Post #' + postCount,
+    //         content: 'Content for New Post #' + postCount,
+    //         author: user.uid,
+    //         category: 'default',
+    //         createAt: Date.now(),
+    //         updatedAt: Date.now(),
+    //     }).then(function () {
+    //         console.log('post added', postCount, arguments);
+    //     });
+    //
+    //     postCount++;
+    // }, 1000);
 })
 
-.controller('PlaylistCtrl', function($scope, $stateParams) {
+.controller('PostDetailCtrl', function($scope, $stateParams) {
 });
