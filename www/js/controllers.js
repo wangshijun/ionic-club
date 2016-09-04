@@ -111,7 +111,9 @@ angular.module('starter.controllers', [])
     $scope.doRegister = function() {
         console.log('Doing register', $scope.registerData);
 
-        const { email, password, confirmPassword } = $scope.registerData;
+        var email = $scope.registerData.email;
+        var password = $scope.registerData.password;
+        var confirmPassword = $scope.registerData.confirmPassword;
 
         $scope.firebaseUser = null;
         $scope.error = null;
@@ -131,14 +133,14 @@ angular.module('starter.controllers', [])
             return;
         }
 
-        auth.$createUserWithEmailAndPassword(email, password).then((firebaseUser) => {
+        auth.$createUserWithEmailAndPassword(email, password).then(function (firebaseUser) {
             console.log('register success:', firebaseUser);
             ionicToast.show('注册成功，即将自动登录', 'middle', false, 1000);
             $timeout(function () {
                 $scope.registerModal.hide();
                 login(email, password);
             }, 1000);
-        }).catch((error) => {
+        }).catch(function (error) {
             console.log('register error:', error)
             $scope.error = error.message;
         });
