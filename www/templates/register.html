@@ -1,6 +1,6 @@
 <ion-modal-view>
     <ion-header-bar>
-        <h1 class="title">创建账号</h1>
+        <h1 class="title">注册</h1>
         <div class="buttons">
             <button class="button button-clear" ng-click="closeLogin()">关闭</button>
         </div>
@@ -23,7 +23,7 @@
                 <p ng-if="error" class="assertive padding">{{error}}</p>
                 <div class="row">
                     <div class="col col-50">
-                        <button class="button button-block button-positive" type="submit">创建账号</button>
+                        <button class="button button-block button-positive" type="submit">注册<ion-spinner ng-if="isLoading" icon="spiral"></ion-spinner></button>
                     </div>
                     <div class="col col-50">
                         <a ng-click="openLogin()" class="button button-block button-light">登录</a>

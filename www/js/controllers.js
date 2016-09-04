@@ -11,7 +11,9 @@ angular.module('starter.controllers', [])
 
     var auth = $firebaseAuth();
     var login = function (email, password) {
+        $scope.isLoading = true;
         auth.$signInWithEmailAndPassword(email, password).then(function (firebaseUser) {
+            $scope.isLoading = false;
             if (firebaseUser) {
                 console.log(firebaseUser)
                 $scope.user = $localStorage.loginUser = {
@@ -27,10 +29,12 @@ angular.module('starter.controllers', [])
             }
         }).catch(function (error) {
             console.log('login error:', error)
+            $scope.isLoading = false;
             $scope.error = error.message;
         });
     }
 
+    $scope.isLoading = false;
     $scope.user = $localStorage.loginUser;
     $scope.error = null;
 
@@ -109,6 +113,8 @@ angular.module('starter.controllers', [])
 
     // Perform the register action when the user submits the register form
     $scope.doRegister = function() {
+        $scope.user = null;
+        $scope.error = null;
         console.log('Doing register', $scope.registerData);
 
         var email = $scope.registerData.email;
@@ -128,6 +134,7 @@ angular.module('starter.controllers', [])
             return;
         }
 
+        $scope.isLoading = true;
         if (!confirmPassword || confirmPassword !== password) {
             $scope.error = { message: '请填写正确的确认密码' };
             return;
@@ -143,6 +150,7 @@ angular.module('starter.controllers', [])
         }).catch(function (error) {
             console.log('register error:', error)
             $scope.error = error.message;
+            $scope.isLoading = false;
         });
     };
 

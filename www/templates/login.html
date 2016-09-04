@@ -19,10 +19,10 @@
                 <p class="padding assertive" ng-if="error">{{error}}</p>
                 <div class="row">
                     <div class="col col-50">
-                        <button class="button button-block button-positive" type="submit">登录</button>
+                        <button class="button button-block button-positive" type="submit">登录<ion-spinner ng-if="isLoading" icon="spiral"></ion-spinner></button>
                     </div>
                     <div class="col col-50">
-                        <a ng-click="openRegister()" class="button button-block button-light">创建账号</a>
+                        <a ng-click="openRegister()" class="button button-block button-light">注册</a>
                     </div>
                 </div>
             </div>
