@@ -244,16 +244,42 @@ angular.module('starter.controllers', [])
     }
 })
 
-.controller('PostDetailCtrl', function($scope, $stateParams, $firebaseArray, $firebaseObject) {
-    var ref = firebase.database().ref('/posts/' + $stateParams.postId);
-    var post = $firebaseObject(ref);
+.controller('PostDetailCtrl', function($rootScope, $scope, $stateParams, $firebaseArray, $firebaseObject, ionicToast) {
+    var refPost = firebase.database().ref('/posts/' + $stateParams.postId);
+    var refComments = firebase.database().ref('/comments/' + $stateParams.postId);
+    var post = $firebaseObject(refPost);
+    var comments = $firebaseArray(refComments);
 
     $scope.isLoading = true;
     $scope.post = post;
+    $scope.comments = comments;
 
     post.$loaded().then(function () {
         $scope.isLoading = false;
     }).catch(function (error) {
         $scope.error = error.message;
-    })
+    });
+
+    $scope.commentData = { comment: '' };
+    $scope.addComment = function () {
+        console.log($scope.commentData);
+
+        if (!$scope.commentData.comment) {
+            ionicToast.show('评论内容不能为空', 'middle', false, 1000);
+            return;
+        }
+
+        comments.$add({
+            content: $scope.commentData.comment,
+            author: $rootScope.user.uid,
+            authorName: $rootScope.user.displayName || $rootScope.user.email.split('@').shift(),
+            createdAt: firebase.database.ServerValue.TIMESTAMP,
+            updatedAt: firebase.database.ServerValue.TIMESTAMP,
+        }).then(function () {
+            ionicToast.show('评论发表成功', 'middle', false, 1000);
+            $scope.commentData.comment = '';
+        }).catch(function (error) {
+            $scope.error = error.message;
+        });
+    };
 });

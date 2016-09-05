@@ -3,7 +3,25 @@
     <ion-content>
         <ion-spinner ng-if="isLoading" icon="crescent"></ion-spinner>
         <p class="assertive padding" ng-if="error">{{error}}</p>
-        <h2 class="post-title">{{post.title}}</h2>
+        <h3 class="post-title">{{post.title}}</h3>
         <div class="post-content">{{post.content}}</div>
+        <br/>
+        <br/>
+        <div class="list">
+            <div class="item item-divider">评论</div>
+            <a ng-repeat="comment in comments | orderBy:'-createdAt'" class="item item-avatar" href="javascript:void(0)">
+                <img src="venkman.jpg">
+                <h2>{{comment.content}}</h2>
+                <p>{{comment.authorName}}发表于{{comment.createdAt | date: 'yyyy-MM-dd HH:mm'}}</p>
+            </a>
+        </div>
     </ion-content>
+    <div ng-if="user" class="bar bar-footer bar-balanced item-input-inset">
+        <label class="item-input-wrapper">
+            <input type="text" ng-model="commentData.comment" placeholder="说点什么...">
+        </label>
+        <button ng-click="addComment()" class="button button-clear">
+            提交
+        </button>
+    </div>
 </ion-view>
