@@ -1,6 +1,6 @@
 angular.module('starter.controllers', [])
 
-.controller('AppCtrl', function($scope, $ionicModal, $timeout, $firebaseAuth, $localStorage, ionicToast) {
+.controller('AppCtrl', function($rootScope, $scope, $ionicModal, $timeout, $firebaseAuth, $localStorage, ionicToast) {
 
     // With the new view caching in Ionic, Controllers are only called
     // when they are recreated or on app start, instead of every page change.
@@ -16,12 +16,6 @@ angular.module('starter.controllers', [])
             $scope.isLoading = false;
             if (firebaseUser) {
                 console.log(firebaseUser)
-                $scope.user = $localStorage.loginUser = {
-                    displayName: firebaseUser.displayName,
-                    email: firebaseUser.email,
-                    uid: firebaseUser.uid,
-                };
-                $localStorage.loginDate = Date.now();
                 ionicToast.show('登录成功!', 'bottom', false, 1000);
                 $timeout(function() {
                     $scope.closeLogin();
@@ -34,8 +28,22 @@ angular.module('starter.controllers', [])
         });
     }
 
+    $rootScope.user = $localStorage.loginUser;
+    auth.$onAuthStateChanged(function (firebaseUser) {
+        if (firebaseUser) {
+            $rootScope.user = $localStorage.loginUser = {
+                displayName: firebaseUser.displayName,
+                email: firebaseUser.email,
+                uid: firebaseUser.uid,
+            };
+            $localStorage.loginDate = Date.now();
+        } else {
+            $localStorage.loginUser = $rootScope.user = null;
+            $localStorage.loginDate = 0;
+        }
+    });
+
     $scope.isLoading = false;
-    $scope.user = $localStorage.loginUser;
     $scope.error = null;
 
     // Form data for the login modal
@@ -61,15 +69,12 @@ angular.module('starter.controllers', [])
 
     $scope.logout = function() {
         auth.$signOut().then(function () {
-            $localStorage.loginUser = $scope.user = null;
-            $localStorage.loginDate = 0;
             ionicToast.show('已注销!', 'bottom', false, 1000);
         });
     };
 
     // Perform the login action when the user submits the login form
     $scope.doLogin = function() {
-        $scope.user = null;
         $scope.error = null;
 
         console.log('Doing login', $scope.loginData);
@@ -156,11 +161,10 @@ angular.module('starter.controllers', [])
 
 })
 
-.controller('PostListCtrl', function($scope, $firebaseArray, $interval, $localStorage, $timeout, $ionicModal, ionicToast) {
+.controller('PostListCtrl', function($rootScope, $scope, $firebaseArray, $interval, $localStorage, $timeout, $ionicModal, ionicToast) {
     var ref = firebase.database().ref('/posts').orderByChild('createdAt').limitToLast(20);
     var list = $firebaseArray(ref);
     $scope.posts = list;
-    $scope.user = $localStorage.loginUser;
 
     // Loading indicator
     $scope.error = null;
@@ -219,8 +223,8 @@ angular.module('starter.controllers', [])
         list.$add({
             title: title,
             content: content,
-            author: $scope.user.uid,
-            authorName: $scope.user.displayName || $scope.user.email.split('@').shift(),
+            author: $rootScope.user.uid,
+            authorName: $rootScope.user.displayName || $rootScope.user.email.split('@').shift(),
             category: category,
             likeCount: 0,
             commentCount: 0,
@@ -240,5 +244,16 @@ angular.module('starter.controllers', [])
     }
 })
 
-.controller('PostDetailCtrl', function($scope, $stateParams) {
+.controller('PostDetailCtrl', function($scope, $stateParams, $firebaseArray, $firebaseObject) {
+    var ref = firebase.database().ref('/posts/' + $stateParams.postId);
+    var post = $firebaseObject(ref);
+
+    $scope.isLoading = true;
+    $scope.post = post;
+
+    post.$loaded().then(function () {
+        $scope.isLoading = false;
+    }).catch(function (error) {
+        $scope.error = error.message;
+    })
 });

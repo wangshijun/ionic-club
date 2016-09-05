@@ -2,13 +2,14 @@
     <ion-nav-buttons side="right">
         <button ng-disabled="!user" class="button button-clear icon-left ion-compose" ng-click="openPostForm()"></button>
     </ion-nav-buttons>
-    
+
     <ion-content>
         <ion-spinner ng-if="isLoading" icon="crescent"></ion-spinner>
         <p class="assertive padding" ng-if="error">{{error}}</p>
         <ion-list>
-            <ion-item ng-repeat="post in posts" href="#/app/posts/{{post.id}}">
-                {{post.title}}
+            <ion-item ng-repeat="post in posts | orderBy:'-createdAt'" href="#/app/posts/{{post.$id}}">
+                <h2>{{post.title}}</h2>
+                <small class="padding-top">{{post.authorName}} 发布于 {{post.createdAt | date:'MM-dd HH:mm'}}，评论数：{{post.commentCount || 0}}</small>
             </ion-item>
         </ion-list>
     </ion-content>
