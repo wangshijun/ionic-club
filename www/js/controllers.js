@@ -246,7 +246,7 @@ angular.module('starter.controllers', [])
 
 .controller('PostDetailCtrl', function($rootScope, $scope, $stateParams, $firebaseArray, $firebaseObject, ionicToast) {
     var refPost = firebase.database().ref('/posts/' + $stateParams.postId);
-    var refComments = firebase.database().ref('/comments/' + $stateParams.postId);
+    var refComments = firebase.database().ref('/comments/' + $stateParams.postId).orderByChild('createdAt').limitToLast(20);
     var post = $firebaseObject(refPost);
     var comments = $firebaseArray(refComments);
 
