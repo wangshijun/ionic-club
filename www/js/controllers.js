@@ -31,6 +31,7 @@ angular.module('starter.controllers', [])
     $rootScope.user = $localStorage.loginUser;
     auth.$onAuthStateChanged(function (firebaseUser) {
         if (firebaseUser) {
+            $localStorage.loginEmail = firebaseUser.email;
             $rootScope.user = $localStorage.loginUser = {
                 displayName: firebaseUser.displayName,
                 email: firebaseUser.email,
@@ -40,6 +41,7 @@ angular.module('starter.controllers', [])
         } else {
             $localStorage.loginUser = $rootScope.user = null;
             $localStorage.loginDate = 0;
+            $scope.loginData = { email: $localStorage.loginEmail };
         }
     });
 
@@ -47,7 +49,7 @@ angular.module('starter.controllers', [])
     $scope.error = null;
 
     // Form data for the login modal
-    $scope.loginData = {};
+    $scope.loginData = { email: $localStorage.loginEmail || '' };
 
     // Create the login modal that we will use later
     $ionicModal.fromTemplateUrl('templates/login.html', {
@@ -246,7 +248,7 @@ angular.module('starter.controllers', [])
 
 .controller('PostDetailCtrl', function($rootScope, $scope, $stateParams, $firebaseArray, $firebaseObject, ionicToast) {
     var refPost = firebase.database().ref('/posts/' + $stateParams.postId);
-    var refComments = firebase.database().ref('/comments/' + $stateParams.postId);
+    var refComments = firebase.database().ref('/comments/' + $stateParams.postId).orderByChild('createdAt').limitToLast(20);
     var post = $firebaseObject(refPost);
     var comments = $firebaseArray(refComments);
 

@@ -18,21 +18,22 @@
         </ion-header-bar>
         <ion-content>
             <ion-list>
-                <ion-item menu-close ng-if="!user" ng-click="openLogin()">
-                    登录
-                </ion-item>
-                <ion-item menu-close ng-if="user" ng-click="logout()">
-                    注销
+                <ion-item menu-close href="#/app/posts">
+                    浏览
                 </ion-item>
                 <ion-item menu-close href="#/app/search">
                     搜索
                 </ion-item>
-                <ion-item menu-close href="#/app/browse">
-                    浏览
+                <ion-item menu-close ng-if="!user" ng-click="openLogin()">
+                    登录
+                </ion-item>
+                <ion-item menu-close ng-if="!user" ng-click="openRegister()">
+                    注册
+                </ion-item>
+                <ion-item menu-close ng-if="user" ng-click="logout()">
+                    注销<strong>{{user.email}}</strong>
                 </ion-item>
             </ion-list>
-
-            <p class="" ng-if="user">{{user.email}}</p>
         </ion-content>
     </ion-side-menu>
 </ion-side-menus>

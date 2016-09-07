@@ -37,14 +37,6 @@ angular.module('starter', ['ionic', 'firebase', 'ngStorage', 'ionic-toast', 'sta
             }
         }
     })
-    .state('app.browse', {
-        url: '/browse',
-        views: {
-            'menuContent': {
-                templateUrl: 'templates/browse.html'
-            }
-        }
-    })
     .state('app.posts', {
         url: '/posts',
         views: {
