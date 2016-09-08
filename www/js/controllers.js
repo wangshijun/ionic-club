@@ -52,7 +52,7 @@ angular.module('starter.controllers', [])
     $scope.loginData = { email: $localStorage.loginEmail || '' };
 
     // Create the login modal that we will use later
-    $ionicModal.fromTemplateUrl('templates/login.html', {
+    $ionicModal.fromTemplateUrl('templates/users/login.html', {
         scope: $scope
     }).then(function(loginModal) {
         $scope.loginModal = loginModal;
@@ -101,7 +101,7 @@ angular.module('starter.controllers', [])
     $scope.registerData = {};
 
     // Create the register modal that we will use later
-    $ionicModal.fromTemplateUrl('templates/register.html', {
+    $ionicModal.fromTemplateUrl('templates/users/register.html', {
         scope: $scope
     }).then(function(registerModal) {
         $scope.registerModal = registerModal;
@@ -132,18 +132,18 @@ angular.module('starter.controllers', [])
         $scope.error = null;
 
         if (!email) {
-            $scope.error = { message: '请填写正确的邮箱' };
+            $scope.error = '请填写正确的邮箱';
             return;
         }
 
         if (!password) {
-            $scope.error = { message: '请填写登录密码' };
+            $scope.error = '请填写登录密码';
             return;
         }
 
         $scope.isLoading = true;
         if (!confirmPassword || confirmPassword !== password) {
-            $scope.error = { message: '请填写正确的确认密码' };
+            $scope.error = '请填写正确的确认密码';
             return;
         }
 

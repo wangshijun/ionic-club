@@ -33,7 +33,8 @@ angular.module('starter', ['ionic', 'firebase', 'ngStorage', 'ionic-toast', 'sta
         url: '/search',
         views: {
             'menuContent': {
-                templateUrl: 'templates/search.html'
+                templateUrl: 'templates/posts/search.html',
+                controller: 'PostListCtrl',
             }
         }
     })
